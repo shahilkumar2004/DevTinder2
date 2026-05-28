@@ -1,0 +1,20 @@
+{
+  "name": "devtinder2",
+  "version": "1.0.0",
+  "description": "this is create dto copy the part one so that we do not face any issues",
+  "keywords": [
+    "node",
+    "react",
+    "mongo"
+  ],
+  "license": "ISC",
+  "author": "shahil kumar",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node": "^24.16.0"
+  }
+}
