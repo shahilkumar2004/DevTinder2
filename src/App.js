@@ -2,7 +2,7 @@ const express = require("express");
 const connectDb = require("./config/database");
 const User = require("./models/user");
 const mongoose = require("mongoose");
-const isValidateSignData = require("./utils/validator");
+const { isValidatingSignUp, isValidatinglogin } = require("./utils/validator");
 const bcrypt = require("bcrypt");
 
 const app = express();
@@ -20,10 +20,35 @@ app.post("/signup", async (req, res) => {
     isValidateSignData(req);
     // encrypt the password
 
-    // creating a new instance of the user model
-    const userObj = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      gender,
+      age,
+      imgURL,
+      skills,
+      about,
+    } = req.body;
+
+    const encyptedpassward = await bcrypt.hash(password, 10);
+
+    //creating a new instance of the user model
+
     // created instance and saved to the database
-    const user = await new User(userObj).save();
+
+    const user = await new User({
+      firstName,
+      lastName,
+      email,
+      password: encyptedpassward,
+      gender,
+      age,
+      imgURL,
+      skills,
+      about,
+    }).save();
 
     console.log(user);
 
@@ -33,6 +58,34 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// login api
+app.post("/login", async (req, res) => {
+  try {
+    // validated the data
+    isValidatinglogin(req);
+    // extracted from the body
+    const { email, password } = req.body;
+    console.log("email : ", email);
+
+    console.log("password : ", password);
+
+    const user = await User.find({ email });
+    console.log("User:", user);
+    if (!user) {
+      throw new Error("Email id is not present");
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    console.log("Stored password:", user?.password);
+    if (!isValidPassword) {
+      throw new Error("Invalid Credentials");
+    }
+
+    res.send("Login successful");
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
 // finding one user from the database using email
 app.get("/user", async (req, res) => {
   try {

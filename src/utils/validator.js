@@ -1,14 +1,7 @@
 const validator = require("validator");
 
 const isValidatingSignUp = (req) => {
-  const {
-    firstName,
-    lastName,
-    password,
-    email,
-    age,
-    skills,
-  } = req.body;
+  const { firstName, lastName, password, email, age, skills } = req.body;
 
   if (!firstName || !lastName) {
     throw new Error("Enter first and last name");
@@ -37,4 +30,19 @@ const isValidatingSignUp = (req) => {
   return true;
 };
 
-module.exports = isValidatingSignUp;
+const isValidatinglogin = (req) => {
+  const { email, password } = req.body;
+
+  if (!validator.isEmail(email)) {
+    throw new Error("Enter a valid email");
+  }
+
+  if (!password) {
+    throw new Error("Password is required");
+  }
+};
+
+module.exports = {
+  isValidatingSignUp,
+  isValidatinglogin,
+};
