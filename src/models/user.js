@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import validator from "validator";
+const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema({
     type: [String],
   },
 });
-
+ // User is created as user in the database cloud
 const User = mongoose.model("User", userSchema);
 
-export default User;
+module.exports = User;
