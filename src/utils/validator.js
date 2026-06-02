@@ -42,7 +42,33 @@ const isValidatinglogin = (req) => {
   }
 };
 
+const validateProfileEdit = (data) => {
+  const { firstName, lastName, age, gender, skills } = data;
+
+  if (firstName && firstName.length > 30) {
+    throw new Error("First name too long");
+  }
+
+  if (lastName && lastName.length > 30) {
+    throw new Error("Last name too long");
+  }
+
+  if (age && (age < 18 || age > 100)) {
+    throw new Error("Invalid age");
+  }
+
+  if (gender && !["male", "female", "other"].includes(gender.toLowerCase())) {
+    throw new Error("Invalid gender");
+  }
+
+  if (skills && skills.length > 10) {
+    throw new Error("Maximum 10 skills allowed");
+  }
+
+  return true;
+};
 module.exports = {
   isValidatingSignUp,
   isValidatinglogin,
+  validateProfileEdit,
 };

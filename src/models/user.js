@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
+    index: true,
     maxlength: 30,
     minlength: 3,
     trim: true,
@@ -71,7 +72,7 @@ const userSchema = new mongoose.Schema({
     type: [String],
   },
 });
- // User is created as user in the database cloud
+// User is created as user in the database cloud
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

@@ -4,88 +4,35 @@ const User = require("./models/user");
 const mongoose = require("mongoose");
 const { isValidatingSignUp, isValidatinglogin } = require("./utils/validator");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { useAuth } = require("./middleware/auth");
+const cors = require("cors");
 
 const app = express();
+// midleware cors used as to work properly on different port for frontend and backend
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 // this is the midleware to convert the data to readable json ->
 // ->created in use to work for all the routes
 app.use(express.json());
+// we need another midleware t parse the cookes
+app.use(cookieParser());
 
-// app.use("/", async (req, res) => {
-//   res.send("fetched sucessfully");
-// });
+const authRouter = require("./routes/auth");
+const profileRoutes = require("./routes/profile");
+const requestRoutes = require("./routes/request");
+const userRouter = require("./routes/user");
 
-app.post("/signup", async (req, res) => {
-  try {
-    // validate the data
-    isValidateSignData(req);
-    // encrypt the password
+app.use("/", authRouter);
+app.use("/", profileRoutes);
+app.use("/", requestRoutes);
+app.use("/", userRouter);
 
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      gender,
-      age,
-      imgURL,
-      skills,
-      about,
-    } = req.body;
-
-    const encyptedpassward = await bcrypt.hash(password, 10);
-
-    //creating a new instance of the user model
-
-    // created instance and saved to the database
-
-    const user = await new User({
-      firstName,
-      lastName,
-      email,
-      password: encyptedpassward,
-      gender,
-      age,
-      imgURL,
-      skills,
-      about,
-    }).save();
-
-    console.log(user);
-
-    res.send("signup successfuly");
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
-
-// login api
-app.post("/login", async (req, res) => {
-  try {
-    // validated the data
-    isValidatinglogin(req);
-    // extracted from the body
-    const { email, password } = req.body;
-    console.log("email : ", email);
-
-    console.log("password : ", password);
-
-    const user = await User.find({ email });
-    console.log("User:", user);
-    if (!user) {
-      throw new Error("Email id is not present");
-    }
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    console.log("Stored password:", user?.password);
-    if (!isValidPassword) {
-      throw new Error("Invalid Credentials");
-    }
-
-    res.send("Login successful");
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
 // finding one user from the database using email
 app.get("/user", async (req, res) => {
   try {
@@ -102,15 +49,7 @@ app.get("/user", async (req, res) => {
 });
 
 // feed api - set/ feed - get all the users from the database
-app.get("/feed", async (req, res) => {
-  try {
-    // this will help you to find all the data from database
-    const users = await User.find({});
-    res.send(users);
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
+
 
 // updating the by id
 app.patch("/user", async (req, res) => {
@@ -126,6 +65,7 @@ app.patch("/user", async (req, res) => {
       "fisrtName",
       "lastName",
     ];
+
     const isUpdateAllowed = Object.keys(res.body).every((k) =>
       ALLOWED_UPDATES.includes(k)
     );
@@ -139,26 +79,16 @@ app.patch("/user", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
-  try {
-    const email = req.body.email;
-    const findEmail = await User.find({ email: email });
+// app.post("/login", async (req, res) => {
+//   try {
+//     const email = req.body.email;
+//     const findEmail = await User.find({ email: email });
 
-    res.send(findEmail);
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
-
-app.put("/profile", async (req, res) => {
-  try {
-    const user = await User.create(req.body);
-
-    res.send(user);
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
-  }
-});
+//     res.send(findEmail);
+//   } catch (err) {
+//     res.status(400).send("ERROR: " + err.message);
+//   }
+// });
 
 connectDb()
   .then(() => {
@@ -167,6 +97,7 @@ connectDb()
       console.log("server is running on port 4000");
     });
   })
-  .catch(() => {
+  .catch((err) => {
     console.log("Datatbase is not connected ");
+    console.log(err);
   });
