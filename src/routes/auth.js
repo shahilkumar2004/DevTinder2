@@ -88,14 +88,14 @@ authRoutes.post("/logout", async (req, res) => {
   res.send("logout Successfuly");
 });
 
-// authRoutes.get("/feed", useAuth, async (req, res) => {
-//   try {
-//     // this will help you to find all the data from database
-//     const users = await User.find({});
-//     res.send(users);
-//   } catch (err) {
-//     res.status(400).send("ERROR: " + err.message);
-//   }
-// });
+authRoutes.get("/feed", useAuth, async (req, res) => {
+  try {
+    // this will help you to find all the data from database
+    const users = await User.find({});
+    res.send(users);
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
 
 module.exports = authRoutes;
