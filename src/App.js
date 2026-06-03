@@ -1,3 +1,10 @@
+// FIX: Node.js v24 has a known bug on Windows where its internal DNS resolver
+// cannot resolve MongoDB Atlas SRV records (querySrv ECONNREFUSED), even though
+// the OS-level DNS (nslookup) resolves them fine. Setting Google DNS servers
+// explicitly forces Node.js to use a working resolver.
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const express = require("express");
 const connectDb = require("./config/database");
 const User = require("./models/user");

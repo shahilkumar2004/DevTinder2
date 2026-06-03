@@ -43,7 +43,11 @@ authRoutes.post("/signup", async (req, res) => {
       about,
     }).save();
 
-    res.send(User);
+    // FIX: Changed res.send(User) to res.send(user).
+    // User (capital U) is the Mongoose model class itself, not the saved document.
+    // Sending the model class returns garbage data to the client.
+    // user (lowercase) is the actual document created by .save() above.
+    res.send(user);
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }
